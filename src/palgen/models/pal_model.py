@@ -2,10 +2,7 @@ from typing import Optional
 import sqlalchemy as sa
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from pydantic import BaseModel, Field, ConfigDict
-
-class Base(DeclarativeBase):
-    """Base class for SQLAlchemy models."""
-    pass
+from base import Base
 
 class Pal(BaseModel):
     """Model for Pal data."""
