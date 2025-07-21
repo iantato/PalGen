@@ -1,5 +1,11 @@
 from typing import Optional
+import sqlalchemy as sa
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from pydantic import BaseModel, Field, ConfigDict
+
+class Base(DeclarativeBase):
+    """Base class for SQLAlchemy models."""
+    pass
 
 class Pal(BaseModel):
     """Model for Pal data."""
@@ -43,3 +49,43 @@ class Pal(BaseModel):
     cooling: int = Field(..., alias="WorkSuitability_Cool")
     transport: int = Field(..., alias="WorkSuitability_Transport")
     ranching: int = Field(..., alias="WorkSuitability_MonsterFarm")
+
+class PalTable(Base):
+    """SQLAlchemy table for Pal data."""
+    __tablename__ = 'pals'
+
+    internal_index: Mapped[int] = mapped_column(primary_key=True)
+    bp_class: Mapped[str] = mapped_column(sa.String, nullable=False, unique=True)
+    text_name: Mapped[Optional[str]] = mapped_column(sa.String, nullable=True)
+    tribe: Mapped[str] = mapped_column(sa.String, nullable=False)
+    genus: Mapped[str] = mapped_column(sa.String, nullable=False)
+
+    """Index"""
+    zukan_index: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    variant: Mapped[str] = mapped_column(sa.String, nullable=True)
+
+    """Egg and Size Information"""
+    size: Mapped[str] = mapped_column(sa.String, nullable=False)
+    rarity: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+
+    """Elements"""
+    element1: Mapped[str] = mapped_column(sa.String, nullable=True)
+    element2: Mapped[str] = mapped_column(sa.String, nullable=True)
+
+    """Breeding Information"""
+    combirank: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+
+    """Work Suitability"""
+    kindling: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    watering: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    planting: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    electricity: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    handiwork: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    gathering: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    lumbering: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    mining: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    oil_extract: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    medicine: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    cooling: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    transport: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    ranching: Mapped[int] = mapped_column(sa.Integer, nullable=False)
