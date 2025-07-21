@@ -1,6 +1,6 @@
 from typing import Optional
 import sqlalchemy as sa
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from pydantic import BaseModel, Field, ConfigDict
 from base import Base
 
