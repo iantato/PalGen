@@ -2,7 +2,7 @@ from typing import Optional
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column
 from pydantic import BaseModel, Field, ConfigDict
-from base import Base
+from palgen.models.base import Base
 
 class Pal(BaseModel):
     """Model for Pal data."""
@@ -52,7 +52,7 @@ class PalTable(Base):
     __tablename__ = 'pals'
 
     internal_index: Mapped[int] = mapped_column(primary_key=True)
-    bp_class: Mapped[str] = mapped_column(sa.String, nullable=False, unique=True)
+    bp_class: Mapped[str] = mapped_column(sa.String, nullable=False)
     text_name: Mapped[Optional[str]] = mapped_column(sa.String, nullable=True)
     tribe: Mapped[str] = mapped_column(sa.String, nullable=False)
     genus: Mapped[str] = mapped_column(sa.String, nullable=False)
