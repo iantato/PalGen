@@ -1,4 +1,5 @@
 import json
+from loguru import logger
 from palgen.constants import PAL_NAME
 
 class LocalizationReader:
@@ -20,8 +21,11 @@ class LocalizationReader:
                             # Store the name with the key in lowercase for consistency.
                             # This allows for case-insensitive lookups.
                             self.names[k.lower()] = name
+                            logger.debug(f"Loaded localization: {k.lower()}: {name}")
             return self.names
         except FileNotFoundError:
+            logger.error(f"File not found: {self.file_path}")
             raise FileNotFoundError(f"File not found: {self.file_path}")
         except Exception as e:
+            logger.error(f"An error occurred while reading the file: {e}")
             raise Exception(f"An error occurred while reading the file: {e}")

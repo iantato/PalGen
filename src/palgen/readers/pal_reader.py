@@ -1,4 +1,5 @@
 import json
+from loguru import logger
 from palgen.constants import PAL_INFO
 from palgen.models.pal_model import Pal
 from palgen.readers.localization_reader import LocalizationReader
@@ -22,11 +23,14 @@ class PalReader:
                         if self.get_pal_name(v.get('BPClass')) != "Unknown Pal":
                             pal = Pal(**v, internal_index=internal_idx, text_name=self.get_pal_name(v.get('BPClass')))
                             self.pals.append(pal)
+                            logger.debug(f"Added Pal: {pal.text_name} (Internal Index: {internal_idx})")
                             internal_idx += 1
             return self.pals
         except FileNotFoundError:
+            logger.error(f"File not found: {self.file_path}")
             raise FileNotFoundError(f"File not found: {self.file_path}")
         except Exception as e:
+            logger.error(f"An error occurred while reading the file: {e}")
             raise Exception(f"An error occurred while reading the file: {e}")
 
     def get_pal_name(self, bp_class: str) -> str:
