@@ -5,7 +5,7 @@ from palgen.readers.localization_reader import LocalizationReader
 
 class PalReader:
 
-    def __init__(self, file_path):
+    def __init__(self, file_path: str):
         self.file_path = f'{file_path}/{PAL_INFO}'
         self.names = LocalizationReader(file_path).read()
         self.pals = []
