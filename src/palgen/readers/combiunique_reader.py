@@ -12,10 +12,9 @@ class CombiUniqueReader:
         with open(self.file_path, 'r', encoding='utf-8') as file:
             try:
                 data = json.load(file)[0]['Rows']
-                for k, v in data.items():
+                for v in data.values():
                     combination = CombiUniqueModel(**v)
                     self.combi_uniques.append(combination)
-
                 return self.combi_uniques
             except FileNotFoundError:
                 raise FileNotFoundError(f"File not found: {self.file_path}")
