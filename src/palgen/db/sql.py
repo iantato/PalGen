@@ -1,10 +1,11 @@
 import os
 from contextlib import contextmanager
 from loguru import logger
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, delete
 from sqlalchemy.orm import sessionmaker
 from palgen.models.base import Base
 from palgen.models.pal_model import Pal, PalTable
+from palgen.models.combiunique_model import CombiUniqueModel, CombiUniqueTable
 
 def get_sessionmaker(output_path: str) -> sessionmaker:
     """Creates a new SQLAlchemy sessionmaker."""
@@ -28,15 +29,29 @@ def get_db_session(output_path: str):
     finally:
         session.close()
 
+def clear_content(session, table):
+    if os.path.exists(session.bind.url.database):
+        session.execute(delete(table))
+        session.commit()
+        logger.debug(f"Cleared content from table {table.__tablename__}")
+
 def save_pals_to_db(pals: list[Pal], output_path: str) -> None:
     """Saves a list of Pal objects to the database."""
-    # Ensure the database file is removed before creating a new one.
-    # Needed for updating the database when needed.
-    if os.path.exists(f'{output_path}/pals.db'):
-        os.remove(f'{output_path}/pals.db')
-
     with get_db_session(output_path) as session:
+
+        clear_content(session, PalTable)
+
         for pal in pals:
             pal_table = PalTable(**pal.model_dump())
             session.add(pal_table)
             logger.debug(f"Saved Pal to DB: {pal.text_name} (Internal Index: {pal.internal_index})")
+
+def save_unique_combinations_to_db(combinations: list[CombiUniqueModel], output_path: str) -> None:
+    with get_db_session(output_path) as session:
+
+        clear_content(session, CombiUniqueTable)
+
+        for combi in combinations:
+            combi_table = CombiUniqueTable(**combi.model_dump())
+            session.add(combi_table)
+            logger.debug(f"Saved Combi Unique to DB: {combi.child_id} with parents {combi.parents}")

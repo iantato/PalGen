@@ -4,7 +4,8 @@ from pathlib import Path
 from colorama import Fore, Style
 from loguru import logger
 from palgen.readers.pal_reader import PalReader
-from palgen.db.sql import save_pals_to_db
+from palgen.readers.combiunique_reader import CombiUniqueReader
+from palgen.db.sql import save_pals_to_db, save_unique_combinations_to_db
 from palgen.logger import setup_logging
 
 class CustomHelpFormatter(argparse.HelpFormatter):
@@ -107,12 +108,32 @@ def generate_command(args):
         output_path = Path(args.output_path) if args.output_path else Path('output')
         output_path.mkdir(parents=True, exist_ok=True)
 
-        reader = PalReader(str(input_path))
-        data = reader.read()
-        logger.info(f"Read {len(data)} Pal entries successfully from '{input_path}'.")
+        readers = list([])
 
-        save_pals_to_db(data, str(output_path))
-        logger.info(f"Pal database generated successfully at '{output_path}'.")
+        if args.pal or args.all:
+            readers.append('pals')
+        if args.combi_unique or args.all:
+            readers.append('combi_unique')
+        if not readers:
+            readers = ['pals', 'combi_unique']
+
+        logger.info(f"Generating Pal database with readers {', '.join(readers)}...")
+
+        if 'pals' in readers:
+            pal_reader = PalReader(str(input_path))
+            pals = pal_reader.read()
+            logger.info(f"Read {len(pals)} Pal objects from '{input_path}'")
+
+            save_pals_to_db(pals, str(output_path))
+            logger.info(f"Pal database generated successfully at '{output_path}/pals.db'")
+
+        if 'combi_unique' in readers:
+            reader = CombiUniqueReader(str(input_path))
+            data = reader.read()
+            logger.info(f"Read {len(data)} unique combinations from '{input_path}'")
+
+            save_unique_combinations_to_db(data, str(output_path))
+            logger.info(f"Combi Unique database generated successfully at '{output_path}/pals.db'")
 
     except Exception as e:
         logger.error(f"An error occurred while generating the Pal database: {e}")
@@ -148,10 +169,27 @@ def main():
         '-o', '--output_path',
         help='Path to the output database file.'
     )
+
+    generate_parser.add_argument(
+        '-p', '--pal',
+        action='store_true',
+        help='Generate Pal database.'
+    )
+    generate_parser.add_argument(
+        '-c', '--combi_unique',
+        action='store_true',
+        help='Generate Combi Unique database.'
+    )
+    generate_parser.add_argument(
+        '-a', '--all',
+        action='store_true',
+        help='Generate both Pal and Combi Unique databases.'
+    )
+
     generate_parser.set_defaults(func=generate_command)
 
     args = parser.parse_args()
-    log_level = "DEBUG" if args.verbose else args.log_level
+    log_level = "DEBUG" if args.verbose else "INFO"
     setup_logging(log_level)
 
     if not args.command:

@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+from sqlalchemy import Column, Integer, JSON
 from sqlalchemy.orm import Mapped, mapped_column
 from pydantic import BaseModel, Field, ConfigDict, model_validator
 from palgen.models.base import Base
@@ -31,5 +32,6 @@ class CombiUniqueTable(Base):
     """SQLAlchemy table for Combi Unique data."""
     __tablename__ = 'combi_unique'
 
-    parents: Mapped[list[dict[str, str]]] = mapped_column(sa.JSON, nullable=False)
-    child_id: Mapped[str] = mapped_column(sa.String, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    parents: Mapped[list[dict[str, str]]] = mapped_column(JSON, nullable=False)
+    child_id: Mapped[str] = mapped_column(sa.String, nullable=False)
